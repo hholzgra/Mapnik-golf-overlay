@@ -1,0 +1,29 @@
+#: A mapnik layer for golf courses
+#: Renders tee, fairway and bunkers
+#: Renders greens pin/flag with hole number
+#: 
+
+To install:
+
+1) have a working mapnik2
+2) add golf tags to osm2pgsql configuration and reimport planet
+
+# add this line to osm2pgsql/default.style
+node,way   golf         text         polygon  # golf course stuff
+
+3) enable golf.xml in renderd
+
+# add lines to enable golf layer in renderd.conf
+# correct the username and hostname
+
+[golf]
+URI=/golf/
+XML=/home/mapnik/stylesheets/golf.xml
+HOST=tile.example.com
+
+4) Golf-related rendering images are un-tarred to symbols/golf/*
+   by default.  
+
+5) Add the golf overlay to your favourite base layer in Open Layers.
+
+6) Enjoy.

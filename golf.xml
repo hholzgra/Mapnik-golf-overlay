@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE Map [
+]>
+
+<Map srs="+init=epsg:3857" bgcolor="transparent">
+
+<Style name="golf">
+<Rule>
+  <Filter>[golf] = 'fairway' or [golf] = 'tee' or [golf] = 'green'</Filter>
+  <MaxScaleDenominator>20000</MaxScaleDenominator>
+  <PolygonPatternSymbolizer file="symbols/golf/fairway.png" type="png" width="16" height="16" /> 
+</Rule>
+
+<Rule>
+  <Filter>[golf] = 'tee' or [golf] = 'green'</Filter>
+  <MaxScaleDenominator>20000</MaxScaleDenominator>
+  <PolygonPatternSymbolizer file="symbols/golf/green.png" type="png" width="10" height="10" />
+</Rule>
+
+<Rule>
+  <Filter>[golf] = 'green' and [ref]!=''</Filter>
+  <MaxScaleDenominator>20000</MaxScaleDenominator>
+  <PointSymbolizer file="symbols/golf/golf-[ref].png"/>
+</Rule>
+
+<Rule>
+  <Filter>[golf] = 'bunker'</Filter>
+  <MaxScaleDenominator>20000</MaxScaleDenominator>
+  <PolygonPatternSymbolizer file= "symbols/golf/bunker.png" type="png" width="10" height="10"/>
+</Rule>
+</Style>
+
+<Style name="golf_cart">
+<Rule>
+  <Filter>[golf] = 'cartpath'</Filter>
+  <MaxScaleDenominator>20000</MaxScaleDenominator>
+  <LineSymbolizer stroke-linejoin="round" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-opacity="0.4"/>
+</Rule>
+</Style>
+
+<Style name="golf_green">
+  <Rule>
+  <MaxScaleDenominator>20000</MaxScaleDenominator>
+      <PointSymbolizer file="symbols/golf/golf-[ref].png"/>
+  </Rule>
+</Style>
+
+  <Layer name="golf_cart" status="on" srs="+init=epsg:3857">
+    <StyleName>golf_cart</StyleName>
+    <Datasource>
+      <Parameter name="dbname">gis</Parameter>
+      <Parameter name="estimate_extent">false</Parameter>
+      <Parameter name="extent">-20037508,-19929239,20037508,19929239</Parameter>
+      <Parameter name="user">mapnik</Parameter>
+      <Parameter name="type">postgis</Parameter>
+      <Parameter name="port">5432</Parameter>
+      <Parameter name="table">
+      (SELECT way,golf 
+           FROM planet_osm_line
+           WHERE golf IN ('cartpath')
+           ORDER BY z_order,way_area DESC
+      ) AS leisure
+      </Parameter>
+    </Datasource>
+  </Layer>
+
+  <Layer name="golf" status="on" srs="+init=epsg:3857">
+    <StyleName>golf</StyleName>
+    <Datasource>
+      <Parameter name="dbname">gis</Parameter>
+      <Parameter name="estimate_extent">false</Parameter>
+      <Parameter name="extent">-20037508,-19929239,20037508,19929239</Parameter>
+      <Parameter name="user">mapnik</Parameter>
+      <Parameter name="type">postgis</Parameter>
+      <Parameter name="port">5432</Parameter>
+      <Parameter name="table">
+      (SELECT way,ref,golf
+          FROM planet_osm_polygon
+          WHERE leisure='golf_course'
+             OR golf in ('bunker','tee','fairway','green')
+          ORDER BY z_order,way_area DESC
+      ) AS leisure
+      </Parameter>
+    </Datasource>
+  </Layer>
+
+<Layer name="golf_green" status="on"  srs="+init=epsg:3857">
+  <StyleName>golf_green</StyleName>
+  <Datasource>
+    <Parameter name="table">
+    (SELECT
+       parentrelation.tags[subscript+1] as ref, way
+     FROM
+        (SELECT
+           generate_subscripts(tags, 1) as subscript, tags, way
+         FROM
+           planet_osm_rels, planet_osm_polygon thegreen
+         WHERE
+           thegreen.golf='green'
+         AND
+           parts &amp;&amp; ARRAY[thegreen.osm_id]
+         AND
+           parts[way_off+1:rel_off] &amp;&amp; array[thegreen.osm_id]
+        ) AS parentrelation
+     WHERE
+        parentrelation.tags[subscript]='ref'
+    ) as greens
+    </Parameter>
+    <Parameter name="geometry_field">way</Parameter>
+      <Parameter name="dbname">gis</Parameter>
+      <Parameter name="estimate_extent">false</Parameter>
+      <Parameter name="extent">-20037508,-19929239,20037508,19929239</Parameter>
+      <Parameter name="user">mapnik</Parameter>
+      <Parameter name="type">postgis</Parameter>
+      <Parameter name="port">5432</Parameter>
+  </Datasource>
+</Layer>
+
+</Map>
