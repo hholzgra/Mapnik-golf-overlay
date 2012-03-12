@@ -20,9 +20,17 @@
 
 <Map srs="+init=epsg:3857" bgcolor="transparent">
 
+<Style name="golf_fairway">
+<Rule>
+  <Filter>[golf] = 'fairway'</Filter>
+  <MaxScaleDenominator>20000</MaxScaleDenominator>
+  <PolygonPatternSymbolizer file="symbols/golf/fairway-[azimuth].png" type="png" width="64" height="64" />
+</Rule>
+</Style>
+
 <Style name="golf">
 <Rule>
-  <Filter>[golf] = 'fairway' or [golf] = 'tee' or [golf] = 'green'</Filter>
+  <Filter>[golf] = 'tee' or [golf] = 'green'</Filter>
   <MaxScaleDenominator>20000</MaxScaleDenominator>
   <PolygonPatternSymbolizer file="symbols/golf/fairway.png" type="png" width="16" height="16" /> 
 </Rule>
@@ -121,6 +129,27 @@
      WHERE
         parentrelation.tags[subscript]='ref'
     ) as greens
+    </Parameter>
+    <Parameter name="geometry_field">way</Parameter>
+      <Parameter name="dbname">gis</Parameter>
+      <Parameter name="estimate_extent">false</Parameter>
+      <Parameter name="extent">-20037508,-19929239,20037508,19929239</Parameter>
+      <Parameter name="user">mapnik</Parameter>
+      <Parameter name="type">postgis</Parameter>
+      <Parameter name="port">5432</Parameter>
+  </Datasource>
+</Layer>
+
+<Layer name="golf_fairway" status="on"  srs="+init=epsg:3857">
+  <StyleName>golf_fairway</StyleName>
+  <Datasource>
+    <Parameter name="table">
+      (SELECT golf,way,(ST_Azimuth(
+                              ST_StartPoint(ST_LongestLine(way,way)),
+                              ST_EndPoint(ST_LongestLine(way,way))
+                   )/(2*pi())*15)::int AS azimuth
+       FROM planet_osm_polygon
+       WHERE golf='fairway') AS way
     </Parameter>
     <Parameter name="geometry_field">way</Parameter>
       <Parameter name="dbname">gis</Parameter>
