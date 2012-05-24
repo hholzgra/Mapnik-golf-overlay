@@ -1,3 +1,7 @@
+### add directional cut marks to fairways
+
+![fairways with cutmarks aligned to length of fairway](http://rweait.dev.openstreetmap.org/golf-azimuth.png)
+
 Mapnik-golf-overlay - a style sheet for rendering golf course objects
 Copyright (C) 2012 Richard Weait
 
