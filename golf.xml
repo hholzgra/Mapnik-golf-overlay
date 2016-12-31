@@ -73,18 +73,18 @@
   <StyleName>golf_fairway</StyleName>
   <Datasource>
     <Parameter name="table">
-      (SELECT golf,way,(ST_Azimuth(
+      (SELECT tags->'golf' as golf,way,(ST_Azimuth(
                               ST_StartPoint(ST_LongestLine(way,way)),
                               ST_EndPoint(ST_LongestLine(way,way))
                    )/(2*pi())*15)::int AS azimuth
        FROM planet_osm_polygon
-       WHERE golf='fairway') AS way
+       WHERE tags->'golf'='fairway') AS way
     </Parameter>
     <Parameter name="geometry_field">way</Parameter>
       <Parameter name="dbname">gis</Parameter>
       <Parameter name="estimate_extent">false</Parameter>
       <Parameter name="extent">-20037508,-19929239,20037508,19929239</Parameter>
-      <Parameter name="user">mapnik</Parameter>
+      <Parameter name="user">maposmatic</Parameter>
       <Parameter name="type">postgis</Parameter>
       <Parameter name="port">5432</Parameter>
   </Datasource>
@@ -96,13 +96,13 @@
       <Parameter name="dbname">gis</Parameter>
       <Parameter name="estimate_extent">false</Parameter>
       <Parameter name="extent">-20037508,-19929239,20037508,19929239</Parameter>
-      <Parameter name="user">mapnik</Parameter>
+      <Parameter name="user">maposmatic</Parameter>
       <Parameter name="type">postgis</Parameter>
       <Parameter name="port">5432</Parameter>
       <Parameter name="table">
-      (SELECT way,golf 
+      (SELECT way, tags->'golf' as golf 
            FROM planet_osm_line
-           WHERE golf IN ('cartpath')
+           WHERE tags->'golf' IN ('cartpath')
            ORDER BY z_order,way_area DESC
       ) AS leisure
       </Parameter>
@@ -115,14 +115,14 @@
       <Parameter name="dbname">gis</Parameter>
       <Parameter name="estimate_extent">false</Parameter>
       <Parameter name="extent">-20037508,-19929239,20037508,19929239</Parameter>
-      <Parameter name="user">mapnik</Parameter>
+      <Parameter name="user">maposmatic</Parameter>
       <Parameter name="type">postgis</Parameter>
       <Parameter name="port">5432</Parameter>
       <Parameter name="table">
-      (SELECT way,ref,golf
+      (SELECT way,ref,tags->'golf' as golf
           FROM planet_osm_polygon
           WHERE leisure='golf_course'
-             OR golf in ('bunker','tee','fairway','green')
+             OR tags->'golf' in ('bunker','tee','fairway','green')
           ORDER BY z_order,way_area DESC
       ) AS leisure
       </Parameter>
@@ -137,11 +137,11 @@
        parentrelation.tags[subscript+1] as ref, way
      FROM
         (SELECT
-           generate_subscripts(tags, 1) as subscript, tags, way
+           generate_subscripts(rel.tags, 1) as subscript, rel.tags, way
          FROM
-           planet_osm_rels, planet_osm_polygon thegreen
+           planet_osm_polygon thegreen, planet_osm_rels rel
          WHERE
-           thegreen.golf='green'
+           thegreen.tags->'golf'='green'
          AND
            parts &amp;&amp; ARRAY[thegreen.osm_id]
          AND
@@ -155,7 +155,7 @@
       <Parameter name="dbname">gis</Parameter>
       <Parameter name="estimate_extent">false</Parameter>
       <Parameter name="extent">-20037508,-19929239,20037508,19929239</Parameter>
-      <Parameter name="user">mapnik</Parameter>
+      <Parameter name="user">maposmatic</Parameter>
       <Parameter name="type">postgis</Parameter>
       <Parameter name="port">5432</Parameter>
   </Datasource>
