@@ -18,13 +18,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
 
-<Map srs="+init=epsg:3857" bgcolor="transparent">
+<Map srs="+init=epsg:3857" background-color="transparent">
 
 <Style name="golf_fairway">
 <Rule>
   <Filter>[golf] = 'fairway'</Filter>
   <MaxScaleDenominator>20000</MaxScaleDenominator>
-  <PolygonPatternSymbolizer file="symbols/golf/fairway-[azimuth].png" type="png" width="64" height="64" />
+  <PolygonPatternSymbolizer file="symbols/golf/fairway-[azimuth].png" />
 </Rule>
 </Style>
 
@@ -32,13 +32,13 @@
 <Rule>
   <Filter>[golf] = 'tee' or [golf] = 'green'</Filter>
   <MaxScaleDenominator>20000</MaxScaleDenominator>
-  <PolygonPatternSymbolizer file="symbols/golf/fairway.png" type="png" width="16" height="16" /> 
+  <PolygonPatternSymbolizer file="symbols/golf/fairway.png" />
 </Rule>
 
 <Rule>
   <Filter>[golf] = 'tee' or [golf] = 'green'</Filter>
   <MaxScaleDenominator>20000</MaxScaleDenominator>
-  <PolygonPatternSymbolizer file="symbols/golf/green.png" type="png" width="10" height="10" />
+  <PolygonPatternSymbolizer file="symbols/golf/green.png" />
 </Rule>
 
 <Rule>
@@ -50,7 +50,7 @@
 <Rule>
   <Filter>[golf] = 'bunker'</Filter>
   <MaxScaleDenominator>20000</MaxScaleDenominator>
-  <PolygonPatternSymbolizer file= "symbols/golf/bunker.png" type="png" width="10" height="10"/>
+  <PolygonPatternSymbolizer file= "symbols/golf/bunker.png" />
 </Rule>
 </Style>
 
